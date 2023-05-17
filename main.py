@@ -112,4 +112,4 @@ while True:
             dump(feature_collection, f)
 
         # Delay for 12 hours
-        time.sleep(1)
+        time.sleep(1000)
