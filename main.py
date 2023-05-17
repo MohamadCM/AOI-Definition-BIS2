@@ -21,7 +21,7 @@ while True:
             data = json.load(f)
 
         # Get the latitude and longitude from the images array
-        coords = [(img['lat'], img['long']) for img in data['images']]
+        coords = [(loc[0], loc[1]) for loc in data['locations']]
 
         # Convert the coordinates to radians
         coords = np.radians(coords)
