@@ -1,0 +1,4 @@
+geojson==3.0.1
+numpy==1.24.3
+scikit_learn==1.2.2
+Shapely==2.0.1
