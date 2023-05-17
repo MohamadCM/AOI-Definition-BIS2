@@ -6,113 +6,109 @@ from geojson import Feature, FeatureCollection, dump
 
 import os
 
-import time
 
 input_dir = 'input'  # Specify the input directory
 output_dir = 'output'  # Specify the output directory
 
-while True:
-    input_files = [f for f in os.listdir(input_dir) if f.endswith('.json')]
-    for input_file in input_files:
-        input_file_path = os.path.join(input_dir, input_file)
+input_files = [f for f in os.listdir(input_dir) if f.endswith('.json')]
+for input_file in input_files:
+    input_file_path = os.path.join(input_dir, input_file)
 
-        # Read input file
-        with open(input_file_path) as f:
-            data = json.load(f)
+    # Read input file
+    with open(input_file_path) as f:
+        data = json.load(f)
 
-        # Get the latitude and longitude from the images array
-        coords = [(loc[0], loc[1]) for loc in data['locations']]
+    # Get the latitude and longitude from the images array
+    coords = [(img['lat'], img['long']) for img in data['locations']]
 
-        # Convert the coordinates to radians
-        coords = np.radians(coords)
+    # Convert the coordinates to radians
+    coords = np.radians(coords)
 
-        # Compute clustering with DBSCAN
-        epsilon = 0.01  # epsilon in radians
+    # Compute clustering with DBSCAN
+    epsilon = 0.01  # epsilon in radians
 
-        min_samples = 2
+    min_samples = 2
 
-        db = DBSCAN(eps=epsilon, min_samples=min_samples, algorithm='ball_tree', metric='haversine').fit(coords)
+    db = DBSCAN(eps=epsilon, min_samples=min_samples, algorithm='ball_tree', metric='haversine').fit(coords)
 
-        # Get the cluster labels and number of clusters
-        labels = db.labels_
+    # Get the cluster labels and number of clusters
+    labels = db.labels_
 
-        n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+    n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 
-        # Create a list of polygons for each cluster
+    # Create a list of polygons for each cluster
 
-        polygons = []
-        for i in range(n_clusters):
-            # Get all the coordinates in the cluster
+    polygons = []
+    for i in range(n_clusters):
+        # Get all the coordinates in the cluster
 
-            cluster_coords = coords[labels == i]
+        cluster_coords = coords[labels == i]
 
-            # Compute the center of the cluster
+        # Compute the center of the cluster
 
-            center = np.mean(cluster_coords, axis=0)
+        center = np.mean(cluster_coords, axis=0)
 
-            # Compute the radius of the cluster
+        # Compute the radius of the cluster
 
-            distances = np.linalg.norm(cluster_coords - center, axis=1)
+        distances = np.linalg.norm(cluster_coords - center, axis=1)
 
-            radius = np.max(distances)
+        radius = np.max(distances)
 
-            # Convert the center and radius back to degrees
+        # Convert the center and radius back to degrees
 
-            center = np.degrees(center)
+        center = np.degrees(center)
 
-            radius = np.degrees(radius)
+        radius = np.degrees(radius)
 
-            # Create a rectangle around the center point
+        # Create a rectangle around the center point
 
-            lat, lon = center
+        lat, lon = center
 
-            lat_offset = radius
+        lat_offset = radius
 
-            lon_offset = radius / np.cos(np.radians(lat))
+        lon_offset = radius / np.cos(np.radians(lat))
 
-            lat1, lon1 = lat - lat_offset, lon - lon_offset
+        lat1, lon1 = lat - lat_offset, lon - lon_offset
 
-            lat2, lon2 = lat + lat_offset, lon + lon_offset
+        lat2, lon2 = lat + lat_offset, lon + lon_offset
 
-            polygon = Polygon([(lon1, lat1), (lon1, lat2), (lon2, lat2), (lon2, lat1)])
+        polygon = Polygon([(lon1, lat1), (lon1, lat2), (lon2, lat2), (lon2, lat1)])
 
-            polygons.append(polygon)
+        polygons.append(polygon)
 
-        # Merge overlapping polygons
+    # Merge overlapping polygons
 
-        merged_polygon = polygons[0]
+    merged_polygon = polygons[0]
 
-        for polygon in polygons[1:]:
-            merged_polygon = merged_polygon.union(polygon)
+    for polygon in polygons[1:]:
+        merged_polygon = merged_polygon.union(polygon)
 
-        # Generate a new AoiID
+    # Generate a new AoiID
 
-        event_id = data['eventId']
+    event_id = data['eventId']
 
-        output_files = [f for f in os.listdir(output_dir) if f.startswith(f"{event_id}_AoiID_")]
+    output_files = [f for f in os.listdir(output_dir) if f.startswith(f"{event_id}_AoiID_")]
 
-        new_aoi_id = len(output_files) + 1
+    new_aoi_id = len(output_files) + 1
 
-        # Convert the merged polygon to GeoJSON
+    # Convert the merged polygon to GeoJSON
 
-        properties = data.copy()
+    properties = data.copy()
 
-        properties['AoiID'] = new_aoi_id
+    properties['AoiID'] = new_aoi_id
 
-        feature = Feature(geometry=mapping(merged_polygon), properties=properties)
+    feature = Feature(geometry=mapping(merged_polygon), properties=properties)
 
-        feature_collection = FeatureCollection([feature])
+    feature_collection = FeatureCollection([feature])
 
-        # Format the output file name
+    # Format the output file name
 
-        output_file_name = os.path.join(output_dir, f"{event_id}_AoiID_{new_aoi_id}.geojson")
+    output_file_name = os.path.join(output_dir, f"{event_id}_AoiID_{new_aoi_id}.geojson")
 
-        with open(output_file_name, 'w') as f:
+    with open(output_file_name, 'w') as f:
 
-            dump(feature_collection, f)
+        dump(feature_collection, f)
 
-        # Delay for 12 hours
-        time.sleep(1000)
-
-        #add a comment to test the push 
-        #add a comment to test the pull
+    # Delay for 12 hours
+    #add a comment to test the push
+    #add a comment to test the pull
