@@ -20,7 +20,7 @@ while True:
         with open(input_file_path) as f:
             data = json.load(f)
 
-        # Get the latitude and longitude from the images array
+        # Get the latitude and longitude from the locations
         coords = [(loc[0], loc[1]) for loc in data['locations']]
 
         # Convert the coordinates to radians
@@ -87,7 +87,7 @@ while True:
 
         # Generate a new AoiID
 
-        event_id = data['eventId']
+        event_id = data['id']
 
         output_files = [f for f in os.listdir(output_dir) if f.startswith(f"{event_id}_AoiID_")]
 
@@ -112,7 +112,4 @@ while True:
             dump(feature_collection, f)
 
         # Delay for 12 hours
-        time.sleep(1000)
-
-        #add a comment to test the push 
-        #add a comment to test the pull
+        time.sleep(10)
