@@ -1,11 +1,19 @@
 import os
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 import json
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import main
+from calculator import calculate_aoi
 
 app = Flask(__name__)
+
+
+@app.route('/aoi', methods=['POST'])
+def get_input():
+    data = json.loads(request.data)
+    event_data = data['event']
+    response = calculate_aoi(event_data)
+    return response
 
 
 @app.route('/files/')
@@ -37,4 +45,4 @@ def serve_file(filename):
 
 
 if __name__ == '__main__':
-      app.run(host='0.0.0.0', port=4444)
+    app.run(host='0.0.0.0', port=4444)

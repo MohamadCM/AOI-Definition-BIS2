@@ -6,17 +6,13 @@ from geojson import Feature, FeatureCollection, dump
 
 import os
 
-
-input_dir = 'input'  # Specify the input directory
+# input_dir = 'input'  # Specify the input directory
 output_dir = 'output'  # Specify the output directory
 
-input_files = [f for f in os.listdir(input_dir) if f.endswith('.json')]
-for input_file in input_files:
-    input_file_path = os.path.join(input_dir, input_file)
 
+def calculate_aoi(input_json):
     # Read input file
-    with open(input_file_path) as f:
-        data = json.load(f)
+    data = input_json
 
     # Get the latitude and longitude from the images array
     coords = [(img['lat'], img['long']) for img in data['locations']]
@@ -109,6 +105,4 @@ for input_file in input_files:
 
         dump(feature_collection, f)
 
-    # Delay for 12 hours
-    #add a comment to test the push
-    #add a comment to test the pull
+    return feature_collection
