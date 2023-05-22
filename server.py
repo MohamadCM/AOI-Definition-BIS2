@@ -8,7 +8,7 @@ from calculator import calculate_aoi
 app = Flask(__name__)
 
 
-@app.route('/aoi', methods=['POST'])
+@app.route('/aoi/', methods=['POST'])
 def get_input():
     event_data = json.loads(request.data)
 #    event_data = data['event']
