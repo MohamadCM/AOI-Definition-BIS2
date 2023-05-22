@@ -13,9 +13,9 @@ import os
 def calculate_aoi(data, input_dir='input', output_dir='output'):
     coords = get_coordinates(data)
     df2 = compute_distances(coords)
-    plot_distances(df2)
+    # plot_distances(df2)
     df3 = filter_distances(df2, 0.5)
-    plot_distances(df3)
+    # plot_distances(df3)
     eps = compute_eps_values(df3)
     silhouette_list = compute_silhouette_scores(eps, coords)
     max_silhouette_avg, best_eps = find_best_eps(eps, silhouette_list)
