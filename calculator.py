@@ -15,7 +15,8 @@ def calculate_aoi(input_json):
     data = input_json
 
     # Get the latitude and longitude from the images array
-    coords = [(img['lat'], img['long']) for img in data['locations']]
+    locations = data['locations']
+    coords = locations[0], locations[1]
 
     # Convert the coordinates to radians
     coords = np.radians(coords)
@@ -81,7 +82,7 @@ def calculate_aoi(input_json):
 
     # Generate a new AoiID
 
-    event_id = data['eventId']
+    event_id = data['id']
 
     output_files = [f for f in os.listdir(output_dir) if f.startswith(f"{event_id}_AoiID_")]
 
