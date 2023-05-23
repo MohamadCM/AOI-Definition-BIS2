@@ -20,10 +20,12 @@ def get_input():
 def serve_files():
     file_dir = os.getcwd() + "/output/"
     files = os.listdir(file_dir)
-    response = f"<P1'>Output files</P1><br>"
+    response = []
     for filename in files:
-        response += f"<a href='/files/{filename}'>{filename}</a><br>"
-    response += f"<hr />"
+        with open("./output/" + filename, 'r') as file:
+            data = json.load(file)
+        data["id"] = filename
+        response.append(data)
     return response
 
 
