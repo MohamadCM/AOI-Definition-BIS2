@@ -10,10 +10,13 @@ app = Flask(__name__)
 
 @app.route('/aoi/', methods=['POST'])
 def get_input():
-    event_data = json.loads(request.data)
-#    event_data = data['event']
-    response = calculate_aoi(event_data)
-    return response
+    try:
+        event_data = json.loads(request.data)
+        #    event_data = data['event']
+        response = calculate_aoi(event_data)
+        return response
+    except:
+        return "Bad input", 400
 
 
 @app.route('/files/')

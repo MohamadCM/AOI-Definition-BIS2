@@ -124,7 +124,7 @@ def merge_polygons(polygons):
 
 # Generates the GeoJSON output file.
 def generate_output_file(data, merged_polygon, output_dir):
-    event_id = data['id']
+    event_id = data['event_id']
     output_files = [f for f in os.listdir(output_dir) if f.startswith(f"{event_id}_AoiID_")]
     new_aoi_id = len(output_files) + 1
     properties = data.copy()
